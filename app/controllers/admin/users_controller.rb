@@ -123,6 +123,7 @@ class Admin::UsersController < Admin::BaseController
       :linkedin,
       :language,
       :team_list,
+      :customer_group_list,
       :active,
       :notify_on_private,
       :notify_on_public,

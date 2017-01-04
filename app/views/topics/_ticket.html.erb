@@ -9,6 +9,7 @@
 
 <tr class="topic border-bottom">
   <td>
+    <%= avatar_image(ticket.user, size=40) %> 
     <span class="truncate-ellipsis">
       <%= link_to "##{ticket.id}- #{ticket.name.capitalize}", ticket_path(ticket) -%><%= badge_for_status(ticket.current_status) %>
     </span>

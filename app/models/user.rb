@@ -102,6 +102,7 @@ class User < ActiveRecord::Base
   after_create :enable_notifications_for_admin
   before_save :reject_invalid_characters_from_name
   acts_as_taggable_on :teams
+  acts_as_taggable_on :customer_groups
 
   ROLES = %w[admin agent editor user]
 

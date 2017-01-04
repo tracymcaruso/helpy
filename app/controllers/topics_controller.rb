@@ -57,7 +57,15 @@ class TopicsController < ApplicationController
   end
 
   def tickets
-    @topics = current_user.topics.isprivate.undeleted.chronologic.page params[:page]
+    if current_user.customer_groups.present?
+      users = User.tagged_with([current_user.customer_groups.first.name], on: 'customer_groups').map{|b| b.id}
+      raw_topics = Topic.where("user_id IN (?) or user_id= ?", users, current_user.id)
+    else
+      raw_topics = current_user.topics
+    end
+
+    @topics = raw_topics.isprivate.undeleted.chronologic.page params[:page]
+    # @group_topics = Topic.where("user_id IN (?)", users) + current_user.topics.isprivate.undeleted.chronologic
     @page_title = t(:tickets, default: 'Tickets')
     add_breadcrumb @page_title
     respond_to do |format|
@@ -66,7 +74,15 @@ class TopicsController < ApplicationController
   end
 
   def ticket
-    @topic = current_user.topics.undeleted.where(id: params[:id]).first
+
+    if current_user.customer_groups.present?
+      users = User.tagged_with([current_user.customer_groups.first.name], on: 'customer_groups').map{|b| b.id}
+      @topic = Topic.where("user_id IN (?)", users).where(id: params[:id]).first
+    else
+      @topic = current_user.topics.undeleted.where(id: params[:id]).first
+    end
+
+    # @topic = current_user.topics.undeleted.where(id: params[:id]).first
     if @topic
       @posts = @topic.posts.ispublic.chronologic.active.all.includes(:topic, :user, :screenshot_files)
       @page_title = "##{@topic.id} #{@topic.name}"
